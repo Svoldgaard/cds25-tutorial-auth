@@ -52,6 +52,7 @@ public class Program
         builder.Services.AddScoped<IBlogService, BlogService>();
         builder.Services.AddScoped<IDraftService, DraftService>();
         builder.Services.AddScoped<IPasswordHasher<User>, KonciousArgon2idPasswordHasher>();
+        builder.Services.AddScoped<IAuthService, AuthService>();
 
         builder.Services.AddControllers();
         // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
