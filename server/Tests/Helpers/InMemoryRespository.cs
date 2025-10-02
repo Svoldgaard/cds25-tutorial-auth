@@ -2,7 +2,7 @@ using DataAccess.Repositories;
 
 namespace Tests.Helpers;
 
-class InMemoryRepository<T>(IList<T> entities) : IRepository<T>
+class InMemoryRespository<T>(IList<T> entities) : IRepository<T>
     where T : class
 {
     public async Task Add(T entity)
