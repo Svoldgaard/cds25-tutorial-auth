@@ -1,3 +1,5 @@
+using System.Security.Claims;
+using Api.Security;
 using DataAccess.Repositories;
 using Entities = DataAccess.Entities;
 using Requests = Api.Models.Dtos.Requests;
@@ -7,8 +9,8 @@ public interface IDraftService
 {
     Responses.DraftDetail GetById(long id);
     IEnumerable<Responses.Draft> List();
-    Task<long> Create(Requests.DraftFormData data);
-    Task Update(long id, Requests.DraftFormData data);
+    Task<long> Create(ClaimsPrincipal claims, Requests.DraftFormData data);
+    Task Update(ClaimsPrincipal claims, long id, Requests.DraftFormData data);
     Task Delete(long id);
 }
 
@@ -50,13 +52,14 @@ public class DraftService(
             .ToArray();
     }
 
-    public async Task<long> Create(Requests.DraftFormData data)
+    public async Task<long> Create(ClaimsPrincipal claims, Requests.DraftFormData data)
     {
+        var currentUserId = claims.GetUserId();
         var post = new Entities.Post
         {
             Title = data.Title,
             Content = data.Content,
-            AuthorId = null, // TODO fix
+            AuthorId = currentUserId,
             PublishedAt = data.Publish ?? false ? DateTime.UtcNow : null,
             CreatedAt = DateTime.UtcNow,
             UpdatedAt = DateTime.UtcNow,
@@ -65,9 +68,13 @@ public class DraftService(
         return post.Id;
     }
 
-    public async Task Update(long id, Requests.DraftFormData data)
+    public async Task Update(ClaimsPrincipal claims, long id, Requests.DraftFormData data)
     {
-        var post = _postRepository.Query().Single(x => x.Id == id);
+        var currentUserId = claims.GetUserId();
+        var post = _postRepository
+            .Query()
+            .Where(x => x.AuthorId == currentUserId)
+            .Single(x => x.Id == id);
         post.Title = data.Title;
         post.Content = data.Content;
         post.UpdatedAt = DateTime.UtcNow;

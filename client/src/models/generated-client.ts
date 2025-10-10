@@ -474,6 +474,7 @@ export class DraftClient {
 }
 
 export interface LoginResponse {
+    [x: string]: SetStateActionWithReset<string | null>;
 }
 
 export interface LoginRequest {

@@ -1,6 +1,7 @@
 using Api.Models.Dtos.Requests;
 using Api.Models.Dtos.Responses;
 using Api.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Api.Controllers;
@@ -13,11 +14,13 @@ public class BlogController(IBlogService blogService) : ControllerBase
 
     [HttpGet]
     [Route("")]
+    [AllowAnonymous]
     public IEnumerable<Post> List([FromQuery] int? page) =>
         blogService.Newest(new PostsQuery(page ?? 0));
 
     [HttpGet]
     [Route("{id}")]
+    [AllowAnonymous]
     public PostDetail Get(long id) => blogService.GetById(id);
 
     [HttpPost]
